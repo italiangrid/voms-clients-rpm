@@ -1,0 +1,65 @@
+%define _unpackaged_files_terminate_build 0
+
+%global mvn_settings @@MVN_SETTINGS@@
+%global pom_version @@POM_VERSION@@
+
+%global orig_name voms-clients
+
+Name: voms-clients3
+Version: 3.0
+Release: 1%{?dist}
+Summary: The Virtual Organisation Membership Service command line clients
+
+Group: Applications/Internet
+License: ASL 2.0
+URL: https://github.com/andreaceccanti/voms-clients
+Source: %{name}-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildArch: noarch
+
+BuildRequires: maven
+BuildRequires: jpackage-utils
+BuildRequires: java-devel
+
+Requires: java
+Requires: voms-api-java
+Requires: jakarta-commons-io
+Requires: jakarta-commons-cli
+
+%description
+The Virtual Organization Membership Service (VOMS) is an attribute authority
+which serves as central repository for VO user authorization information,
+providing support for sorting users into group hierarchies, keeping track of
+their roles and other attributes in order to issue trusted attribute
+certificates and SAML assertions used in the Grid environment for
+authorization purposes.
+
+This package provides the command line clients for VOMS, voms-proxy-init, 
+voms-proxy-destroy and voms-proxy-info. 
+
+%prep
+%setup -q -n voms-clients
+
+%build
+mvn %{?mvn_settings} -U -DskipTests package
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT/usr
+tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1
+ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root,-)
+%{_bindir}/*
+%{_mandir}/man1/*
+%{_javadir}/%{orig_name}-%{pom_version}.jar
+%{_javadir}/%{name}.jar
+
+%changelog
+* Wed Nov 14 2012 Valerio Venturi <valerio.venturi at cnaf.infn.it> - 3.0.0-1
+- New version of VOMS command line clients
