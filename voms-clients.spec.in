@@ -22,9 +22,10 @@ BuildRequires: jpackage-utils
 BuildRequires: java-devel
 
 Requires: java
-Requires: voms-api-java
+Requires: voms-api-java3
 Requires: jakarta-commons-io
 Requires: jakarta-commons-cli
+Requires: jpackage-utils
 
 %description
 The Virtual Organization Membership Service (VOMS) is an attribute authority
