@@ -25,8 +25,11 @@ all: rpm
 prepare-sources: sanity-checks clean
 	mkdir -p $(source_dir)/$(name)
 	git clone $(git) $(source_dir)/$(name)
-	cd $(source_dir)/$(name) && git archive --format=tar --prefix=$(name)/ $(checkout) | gzip > $(name).tar.gz
-	mv $(source_dir)/$(name)/$(name).tar.gz $(source_dir)
+	cd $(source_dir)/$(name) && git archive --format=tar --prefix=$(name)/ $(checkout) > ../$(name).tar
+	git clone https://github.com/italiangrid/build-settings.git $(source_dir)/build-settings
+	cd $(source_dir)/build-settings && git archive --format=tar --prefix=build-settings/ master > ../build-settings.tar
+	cd $(source_dir) && tar --concatenate --file=$(name).tar build-settings.tar
+	gzip $(source_dir)/$(name).tar
 
 prepare-spec: prepare-sources
 	sed -e 's#@@MVN_SETTINGS@@#$(mvn_settings)#g' \

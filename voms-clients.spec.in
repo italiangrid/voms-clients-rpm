@@ -1,6 +1,5 @@
 %define _unpackaged_files_terminate_build 0
 
-%global mvn_settings @@MVN_SETTINGS@@
 %global pom_version @@POM_VERSION@@
 
 %global orig_name voms-clients
@@ -42,7 +41,7 @@ voms-proxy-destroy and voms-proxy-info.
 %setup -q -n voms-clients
 
 %build
-mvn %{?mvn_settings} -U -DskipTests package
+mvn --settings ../build-settings/maven/@@MVN_SETTINGS@@ -U -DskipTests package
 
 %install
 rm -rf $RPM_BUILD_ROOT
