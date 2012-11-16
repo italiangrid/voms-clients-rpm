@@ -1,5 +1,3 @@
-%define _unpackaged_files_terminate_build 0
-
 %global pom_version @@POM_VERSION@@
 %global mvn_settings @@MVN_SETTINGS@@
 %global jar_names   @@JAR_NAMES@@
@@ -80,11 +78,26 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_localstatedir}/lib/%{name}/lib
 %{_localstatedir}/lib/%{name}/lib/*.jar
 
+%pre
+
+if [ $1 -gt 1 ] ; then
+    if [ -d "%{_localstatedir}/lib/%{name}/lib" ]; then
+        rm -f %{_localstatedir}/lib/%{name}/lib/*.jar
+    fi
+fi
+
+%preun
+    if [ $1 -eq 0 ] ; then
+        rm -f %{_localstatedir}/lib/%{name}/lib/*.jar
+        rm -rf %{_localstatedir}/lib/%{name}
+    fi
+
 %post
 for jarname in %{jar_names}; do
     [ -f %{_javadir}/$jarname.jar ] || exit 1
     ln -fs %{_javadir}/$jarname.jar %{_localstatedir}/lib/%{name}/lib
 done
+
 
 %changelog
 * Wed Nov 14 2012 Valerio Venturi <valerio.venturi at cnaf.infn.it> - 3.0.0-1
