@@ -1,6 +1,8 @@
 %define _unpackaged_files_terminate_build 0
 
 %global pom_version @@POM_VERSION@@
+%global mvn_settings @@MVN_SETTINGS@@
+%global jar_names   @@JAR_NAMES@@
 
 %global orig_name voms-clients
 
@@ -44,12 +46,21 @@ voms-proxy-destroy and voms-proxy-info.
 %setup -q -n voms-clients
 
 %build
-mvn --settings ../build-settings/maven/@@MVN_SETTINGS@@ -U -DskipTests package
+mvn @@MVN_SETTINGS@@ -DskipTests -U package
 
 %install
 rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/usr
-tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1
+
+install -dm 755 $RPM_BUILD_ROOT%{_javadir}
+install -dm 755 $RPM_BUILD_ROOT%{_localstatedir}/lib/%{name}/lib
+
+# Install all files but jar dependencies (these will be taken from the OS)
+tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 --exclude '*.jar'
+
+# But install the voms-clients jar as well
+tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 '%{orig_name}/share/java/%{orig_name}-%{pom_version}.jar'
+
+ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{orig_name}.jar
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
 
 %clean
@@ -61,6 +72,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man1/*
 %{_javadir}/%{orig_name}-%{pom_version}.jar
 %{_javadir}/%{name}.jar
+%{_javadir}/%{orig_name}.jar
+
+%dir %{_localstatedir}/lib/%{name}/lib
+
+%post
+for jarname in %{jar_names}; do
+    [ -f %{_javadir}/$jarname.jar ] || exit 1
+    ln -fs %{_javadir}/$jarname.jar %{_localstatedir}/lib/${name}/lib
+done
 
 %changelog
 * Wed Nov 14 2012 Valerio Venturi <valerio.venturi at cnaf.infn.it> - 3.0.0-1
