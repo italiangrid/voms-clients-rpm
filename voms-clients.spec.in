@@ -79,7 +79,7 @@ rm -rf $RPM_BUILD_ROOT
 %post
 for jarname in %{jar_names}; do
     [ -f %{_javadir}/$jarname.jar ] || exit 1
-    ln -fs %{_javadir}/$jarname.jar %{_localstatedir}/lib/${name}/lib
+    ln -fs %{_javadir}/$jarname.jar %{_localstatedir}/lib/%{name}/lib
 done
 
 %changelog
