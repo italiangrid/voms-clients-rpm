@@ -61,7 +61,7 @@ tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 --exclude 
 tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 '%{orig_name}/share/java/%{orig_name}-%{pom_version}.jar'
 
 # And the commons-cli, as the version on SL5 is buggy
-tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 --wildcards '%{orig_name}/share/java/commons-cli-*.jar'
+tar -C $RPM_BUILD_ROOT/%{_localstatedir}/lib/%{name}/lib -xvzf  target/%{orig_name}.tar.gz --strip 3 --wildcards '%{orig_name}/share/java/commons-cli-*.jar'
 
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{orig_name}.jar
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
@@ -78,6 +78,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_javadir}/%{orig_name}.jar
 
 %dir %{_localstatedir}/lib/%{name}/lib
+%{_localstatedir}/lib/%{name}/lib/*.jar
 
 %post
 for jarname in %{jar_names}; do
