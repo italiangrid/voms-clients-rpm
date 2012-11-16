@@ -27,7 +27,7 @@ mirror_conf_name=mirror-settings.xml
 libs_dir=/var/lib/$(name)3/lib
 
 # name of the jar files which make the dependencies
-jar_names=bcprov-1.46 bcmail-1.46 canl voms-api-java3 commons-io commons-cli commons-lang
+jar_names=voms-clients bcprov-1.46 bcmail-1.46 canl voms-api-java3 commons-io commons-cli commons-lang
 
 # maven build options
 mvn_settings=-s $(mirror_conf_name) -Dvoms-clients.libs=$(libs_dir)
