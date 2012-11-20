@@ -71,6 +71,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_mandir}/man1/*
+%{_mandir}/man5/*
 %{_javadir}/%{orig_name}-%{pom_version}.jar
 %{_javadir}/%{name}.jar
 %{_javadir}/%{orig_name}.jar
