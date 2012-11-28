@@ -19,9 +19,9 @@ BuildArch: noarch
 
 BuildRequires: maven
 BuildRequires: jpackage-utils
-BuildRequires: java-devel
+BuildRequires: java-1.6.0-openjdk-devel
 
-Requires: java
+Requires: java-1.6.0-openjdk
 Requires: voms-api-java3
 Requires: jakarta-commons-io
 # Requires: jakarta-commons-cli

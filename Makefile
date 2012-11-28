@@ -1,5 +1,7 @@
 name=voms-clients
 
+tag=master
+
 # the voms-clients repo on GitHub
 git=https://github.com/andreaceccanti/voms-clients.git
 
