@@ -3,6 +3,7 @@
 %global jar_names   @@JAR_NAMES@@
 
 %global orig_name voms-clients
+%global _varlib /var/lib
 
 Name: voms-clients3
 Version: 3.0
@@ -50,7 +51,7 @@ mvn @@MVN_SETTINGS@@ -DskipTests -U package
 rm -rf $RPM_BUILD_ROOT
 
 install -dm 755 $RPM_BUILD_ROOT%{_javadir}
-install -dm 755 $RPM_BUILD_ROOT%{_localstatedir}/lib/%{name}/lib
+install -dm 755 $RPM_BUILD_ROOT%{_varlib}/%{name}/lib
 
 # Install all files but jar dependencies (these will be taken from the OS)
 tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 --exclude '*.jar'
@@ -59,7 +60,7 @@ tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 --exclude 
 tar -C $RPM_BUILD_ROOT/usr -xvzf target/%{orig_name}.tar.gz --strip 1 '%{orig_name}/share/java/%{orig_name}-%{pom_version}.jar'
 
 # And the commons-cli, as the version on SL5 is buggy
-tar -C $RPM_BUILD_ROOT/%{_localstatedir}/lib/%{name}/lib -xvzf  target/%{orig_name}.tar.gz --strip 3 --wildcards '%{orig_name}/share/java/commons-cli-*.jar'
+tar -C $RPM_BUILD_ROOT/%{_varlib}/%{name}/lib -xvzf  target/%{orig_name}.tar.gz --strip 3 --wildcards '%{orig_name}/share/java/commons-cli-*.jar'
 
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{orig_name}.jar
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
@@ -76,27 +77,27 @@ rm -rf $RPM_BUILD_ROOT
 %{_javadir}/%{name}.jar
 %{_javadir}/%{orig_name}.jar
 
-%dir %{_localstatedir}/lib/%{name}/lib
-%{_localstatedir}/lib/%{name}/lib/*.jar
+%dir %{_varlib}/%{name}/lib
+%{_varlib}/%{name}/lib/*.jar
 
 %pre
 
 if [ $1 -gt 1 ] ; then
-    if [ -d "%{_localstatedir}/lib/%{name}/lib" ]; then
-        rm -f %{_localstatedir}/lib/%{name}/lib/*.jar
+    if [ -d "%{_varlib}/%{name}/lib" ]; then
+        rm -f %{_varlib}/%{name}/lib/*.jar
     fi
 fi
 
 %preun
     if [ $1 -eq 0 ] ; then
-        rm -f %{_localstatedir}/lib/%{name}/lib/*.jar
-        rm -rf %{_localstatedir}/lib/%{name}
+        rm -f %{_varlib}/%{name}/lib/*.jar
+        rm -rf %{_varlib}/%{name}
     fi
 
 %post
 for jarname in %{jar_names}; do
-    [ -f %{_javadir}/$jarname.jar ] || exit 1
-    ln -fs %{_javadir}/$jarname.jar %{_localstatedir}/lib/%{name}/lib
+    [ -f %{_javadir}/$jarname.jar ] ||  ( echo "$jarname not found in %{_javadir}" && exit 1 )
+    ln -fs %{_javadir}/$jarname.jar %{_varlib}/%{name}/lib
 done
 
 
