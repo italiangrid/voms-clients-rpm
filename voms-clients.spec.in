@@ -25,7 +25,7 @@ BuildRequires: java-1.6.0-openjdk-devel
 Requires: java-1.6.0-openjdk
 Requires: voms-api-java3
 Requires: jakarta-commons-io
-# Requires: jakarta-commons-cli
+
 Requires: jpackage-utils
 
 Provides: voms-clients = %{version}
