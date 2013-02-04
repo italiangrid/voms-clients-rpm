@@ -30,6 +30,7 @@ Requires: jpackage-utils
 
 Provides: voms-clients
 Provides: voms-clients3
+Conflicts: voms-clients < 3.0
 
 %description
 The Virtual Organization Membership Service (VOMS) is an attribute authority
