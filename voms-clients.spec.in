@@ -29,7 +29,7 @@ Requires: jakarta-commons-io
 Requires: jpackage-utils
 
 Provides: voms-clients = %{version}
-Obsoletes: voms-clients 
+
 
 %description
 The Virtual Organization Membership Service (VOMS) is an attribute authority
