@@ -6,7 +6,7 @@
 %global _varlib /var/lib
 
 Name: voms-clients3
-Version: 3.0.0
+Version: 3.0.1
 Release: 1%{?dist}
 Summary: The Virtual Organisation Membership Service command line clients
 
@@ -103,5 +103,8 @@ done
 
 
 %changelog
+* Thu Apr 11 2013 Andrea Ceccanti <andrea.ceccanti at cnaf.infn.it> - 3.0.1-1
+- Fix for https://issues.infn.it/browse/VOMS-256
+
 * Wed Nov 14 2012 Valerio Venturi <valerio.venturi at cnaf.infn.it> - 3.0.0-1
 - New version of VOMS command line clients
