@@ -3,7 +3,7 @@ name=voms-clients
 tag=master
 
 # the voms-clients repo on GitHub
-git=https://github.com/andreaceccanti/voms-clients.git
+git=https://github.com/italiangrid/voms-clients.git
 
 # needed dirs
 source_dir=sources
