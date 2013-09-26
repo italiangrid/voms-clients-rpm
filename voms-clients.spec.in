@@ -6,8 +6,8 @@
 %global _varlib /var/lib
 
 Name: voms-clients3
-Version: 3.0.3
-Release: 1%{?dist}
+Version: 3.0.4
+Release: 0%{?dist}
 Summary: The Virtual Organisation Membership Service command line clients
 
 Group: Applications/Internet
@@ -103,6 +103,9 @@ done
 
 
 %changelog
+* Thu Sep 26 2013 Andrea Ceccanti <andrea.ceccanti at cnaf.infn.it> - 3.0.4-1
+- Move to CANL 1.3.0
+
 * Thu Jul 11 2013 Andrea Ceccanti <andrea.ceccanti at cnaf.infn.it> - 3.0.3-1
 - Fix for https://issues.infn.it/jira/browse/VOMS-361
 
