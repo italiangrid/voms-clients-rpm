@@ -7,7 +7,7 @@
 
 Name: voms-clients3
 Version: 3.0.5
-Release: 0%{?dist}
+Release: 1%{?dist}
 Summary: The Virtual Organisation Membership Service command line clients
 
 Group: Applications/Internet
@@ -98,10 +98,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/voms-proxy-init3
 %{_bindir}/voms-proxy-info3
 %{_bindir}/voms-proxy-destroy3
-%{_mandir}/man1/voms-proxy-init3.1*
-%{_mandir}/man1/voms-proxy-info3.1*
-%{_mandir}/man1/voms-proxy-destroy3.1*
-%{_mandir}/man5/*
+
+%{_mandir}/man1/voms-proxy-init3.1.gz
+%{_mandir}/man1/voms-proxy-info3.1.gz
+%{_mandir}/man1/voms-proxy-destroy3.1.gz
+%{_mandir}/man5/vomses.5.gz
+%{_mandir}/man5/vomsdir.5.gz
+
 %{_javadir}/%{orig_name}-%{pom_version}.jar
 %{_javadir}/%{name}.jar
 %{_javadir}/%{orig_name}.jar
@@ -132,12 +135,17 @@ for jarname in %{jar_names}; do
 done
 
 %{_sbindir}/update-alternatives --install %{_bindir}/voms-proxy-init \
-    %{name} %{_bindir}/voms-proxy-init3 10
+   voms-proxy-init %{_bindir}/voms-proxy-init3 90 \
+   --slave %{_bindir}/voms-proxy-info voms-proxy-info %{_bindir}/voms-proxy-info3 \
+   --slave %{_bindir}/voms-proxy-destroy voms-proxy-destroy %{_bindir}/voms-proxy-destroy3  \
+   --slave %{_mandir}/man1/voms-proxy-init.1.gz voms-proxy-init-man %{_mandir}/man1/voms-proxy-init3.1.gz \
+   --slave %{_mandir}/man1/voms-proxy-info.1.gz voms-proxy-info-man %{_mandir}/man1/voms-proxy-info3.1.gz \
+   --slave %{_mandir}/man1/voms-proxy-destroy.1.gz voms-proxy-destroy-man %{_mandir}/man1/voms-proxy-destroy3.1.gz
 
 %postun
 
 if [ $1 -eq 0 ] ; then
-    %{_sbindir}/update-alternatives  --remove %{name} %{_bindir}/voms-proxy-init3
+    %{_sbindir}/update-alternatives  --remove voms-proxy-init %{_bindir}/voms-proxy-init3
 fi
 
 %changelog
