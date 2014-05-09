@@ -28,7 +28,11 @@ Requires: jakarta-commons-io
 
 Requires: jpackage-utils
 
-Provides: voms-clients = %{version}
+Requires(post):         %{_sbindir}/update-alternatives
+Requires(postun):       %{_sbindir}/update-alternatives
+
+Provides:       voms-clients = %{version}
+Conflicts:      voms-clients <= 2.0.11-1%{?dist}
 
 
 %description
@@ -66,13 +70,37 @@ tar -C $RPM_BUILD_ROOT/%{_varlib}/%{name}/lib -xvzf  target/%{orig_name}.tar.gz 
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{orig_name}.jar
 ln -s %{orig_name}-%{pom_version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
 
+# Rename to voms-proxy-*3 to avoid clashes with old C clients
+mv $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-init $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-init3
+mv $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-info $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-info3
+mv $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-destroy $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-destroy3
+
+# Rename manpages
+mv $RPM_BUILD_ROOT/%{_mandir}/man1/voms-proxy-init.1 $RPM_BUILD_ROOT/%{_mandir}/man1/voms-proxy-init3.1
+mv $RPM_BUILD_ROOT/%{_mandir}/man1/voms-proxy-info.1 $RPM_BUILD_ROOT/%{_mandir}/man1/voms-proxy-info3.1
+mv $RPM_BUILD_ROOT/%{_mandir}/man1/voms-proxy-destroy.1 $RPM_BUILD_ROOT/%{_mandir}/man1/voms-proxy-destroy3.1
+
+# Needed by alternatives. See http://fedoraproject.org/wiki/Packaging:Alternatives
+touch $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-init
+touch $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-info
+touch $RPM_BUILD_ROOT/%{_bindir}/voms-proxy-destroy
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/*
-%{_mandir}/man1/*
+
+%ghost %{_bindir}/voms-proxy-init
+%ghost %{_bindir}/voms-proxy-info
+%ghost %{_bindir}/voms-proxy-destroy
+
+%{_bindir}/voms-proxy-init3
+%{_bindir}/voms-proxy-info3
+%{_bindir}/voms-proxy-destroy3
+%{_mandir}/man1/voms-proxy-init3.1*
+%{_mandir}/man1/voms-proxy-info3.1*
+%{_mandir}/man1/voms-proxy-destroy3.1*
 %{_mandir}/man5/*
 %{_javadir}/%{orig_name}-%{pom_version}.jar
 %{_javadir}/%{name}.jar
@@ -90,20 +118,33 @@ if [ $1 -gt 1 ] ; then
 fi
 
 %preun
-    if [ $1 -eq 0 ] ; then
-        rm -f %{_varlib}/%{name}/lib/*.jar
-        rm -rf %{_varlib}/%{name}
-    fi
+
+if [ $1 -eq 0 ] ; then
+    rm -f %{_varlib}/%{name}/lib/*.jar
+    rm -rf %{_varlib}/%{name}
+fi
 
 %post
+
 for jarname in %{jar_names}; do
     [ -f %{_javadir}/$jarname.jar ] ||  ( echo "$jarname not found in %{_javadir}" && exit 1 )
     ln -fs %{_javadir}/$jarname.jar %{_varlib}/%{name}/lib
 done
 
+%{_sbindir}/update-alternatives --install %{_bindir}/voms-proxy-init \
+    %{name} %{_bindir}/voms-proxy-init3 10
+
+%postun
+
+if [ $1 -eq 0 ] ; then
+    %{_sbindir}/update-alternatives  --remove %{name} %{_bindir}/voms-proxy-init3
+fi
 
 %changelog
-* Mon Jan 27 2014 Andrea Ceccanti <andrea.ceccanti at cnaf.infn.it> - 3.0.5-1
+
+* Mon Jan 27 2014 Andrea Ceccanti <andrea.ceccanti at cnaf.infn.it> - 3.0.5-0
+- Fix for https://issues.infn.it/jira/browse/VOMS-495. New packaging installable in
+  together with with voms-clients 2.x package.
 - Fix for https://issues.infn.it/jira/browse/VOMS-460
 
 * Thu Sep 26 2013 Andrea Ceccanti <andrea.ceccanti at cnaf.infn.it> - 3.0.4-1
