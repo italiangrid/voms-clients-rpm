@@ -7,7 +7,7 @@
 
 Name: voms-clients3
 Version: 3.0.5
-Release: 1%{?dist}
+Release: 0%{?dist}
 Summary: The Virtual Organisation Membership Service command line clients
 
 Group: Applications/Internet
@@ -23,7 +23,7 @@ BuildRequires: jpackage-utils
 BuildRequires: java-1.6.0-openjdk-devel
 
 Requires: java-1.6.0-openjdk
-Requires: voms-api-java3
+Requires: voms-api-java3 >= 3.0.3
 Requires: jakarta-commons-io
 
 Requires: jpackage-utils
@@ -114,10 +114,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %pre
 
-if [ $1 -gt 1 ] ; then
-    if [ -d "%{_varlib}/%{name}/lib" ]; then
-        rm -f %{_varlib}/%{name}/lib/*.jar
+if [ $1 -eq 2 ] ; then
+  ## Package upgrade, cleanup embedded dependencies
+  if [ -d "%{_varlib}/%{name}/lib" ]; then
+    rm -f %{_varlib}/%{name}/lib/*.jar
+  fi
+
+  ## Remove scripts if not managed with alternatives (pre v. 3.0.5)
+  for c in voms-proxy-init voms-proxy-info voms-proxy-destroy; do
+    if [[ -x %{_bindir}/$c && ! -L %{_bindir}/$c ]]; then
+      rm -f %{_bindir}/$c
     fi
+  done
 fi
 
 %preun
