@@ -144,16 +144,22 @@ done
 
 %{_sbindir}/update-alternatives --install %{_bindir}/voms-proxy-init \
    voms-proxy-init %{_bindir}/voms-proxy-init3 90 \
-   --slave %{_bindir}/voms-proxy-info voms-proxy-info %{_bindir}/voms-proxy-info3 \
-   --slave %{_bindir}/voms-proxy-destroy voms-proxy-destroy %{_bindir}/voms-proxy-destroy3  \
-   --slave %{_mandir}/man1/voms-proxy-init.1.gz voms-proxy-init-man %{_mandir}/man1/voms-proxy-init3.1.gz \
-   --slave %{_mandir}/man1/voms-proxy-info.1.gz voms-proxy-info-man %{_mandir}/man1/voms-proxy-info3.1.gz \
-   --slave %{_mandir}/man1/voms-proxy-destroy.1.gz voms-proxy-destroy-man %{_mandir}/man1/voms-proxy-destroy3.1.gz
+   --slave %{_mandir}/man1/voms-proxy-init.1.gz voms-proxy-init-man %{_mandir}/man1/voms-proxy-init3.1.gz
+
+%{_sbindir}/update-alternatives --install %{_bindir}/voms-proxy-info \
+   voms-proxy-info %{_bindir}/voms-proxy-info3 90 \
+   --slave %{_mandir}/man1/voms-proxy-info.1.gz voms-proxy-info-man %{_mandir}/man1/voms-proxy-info3.1.gz 
+
+%{_sbindir}/update-alternatives --install %{_bindir}/voms-proxy-destroy \
+   voms-proxy-destroy %{_bindir}/voms-proxy-destroy3 90 \
+   --slave %{_mandir}/man1/voms-proxy-destroy.1.gz voms-proxy-destroy-man %{_mandir}/man1/voms-proxy-destroy3.1.gz 
 
 %postun
 
 if [ $1 -eq 0 ] ; then
     %{_sbindir}/update-alternatives  --remove voms-proxy-init %{_bindir}/voms-proxy-init3
+    %{_sbindir}/update-alternatives  --remove voms-proxy-info %{_bindir}/voms-proxy-info3
+    %{_sbindir}/update-alternatives  --remove voms-proxy-destroy %{_bindir}/voms-proxy-destroy3
 fi
 
 %changelog
